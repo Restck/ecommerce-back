@@ -28,7 +28,7 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// ✅ Configurar CORS para Angular (puerto 4200)
+// CORS para Angular
 app.use(
   cors({
     origin: ['http://localhost:4200'],
@@ -36,12 +36,16 @@ app.use(
   })
 );
 
-// ✅ Servir archivos estáticos solo desde /uploads
+// Archivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 /* ===========================================================
    💾 CONEXIÓN A MONGODB
    =========================================================== */
+
+//  🔥 LOG PARA VER EL VALOR REAL QUE RAILWAY ESTÁ MANDANDO
+console.log('🔍 MONGO_URI desde Railway:', process.env.MONGO_URI);
+
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
@@ -64,8 +68,6 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/ordenes', ordenRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/proveedores', proveedorRoutes);
-
-// ✅ Rutas seguras del QR (con JWT)
 app.use('/secure', qrRoutes);
 
 /* ===========================================================
