@@ -28,12 +28,12 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// CORS para Angular y Railway
+// CORS para Angular y producción
 app.use(
   cors({
     origin: [
       'http://localhost:4200',
-      'https://*.railway.app', // Permite frontend en Railway
+      process.env.FRONTEND_URL
     ],
     credentials: true,
   })
@@ -46,11 +46,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
    💾 CONEXIÓN A MONGODB
    =========================================================== */
 
-// 🔍 Para verificar que Railway envía la variable
-console.log('🔍 MONGO_URI desde Railway:', process.env.MONGO_URI);
+console.log('🔍 MONGO_URI:', process.env.MONGO_URI);
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log('✅ Conectado a MongoDB'))
   .catch((err) => console.error('❌ Error conectando a MongoDB:', err));
 
@@ -74,7 +76,6 @@ app.use('/secure', qrRoutes);
    🚀 INICIAR SERVIDOR
    =========================================================== */
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
 });
